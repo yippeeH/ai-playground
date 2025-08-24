@@ -1,0 +1,89 @@
+{
+  "uid": "flow_agg_1m",
+  "title": "Trade Flow — 1m Aggregates",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 2,
+  "refresh": "5s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "symbol",
+        "type": "query",
+        "datasource": { "type": "postgres", "uid": "flowdb" },
+        "refresh": 1,
+        "query": "SELECT DISTINCT symbol FROM trades_agg_1m ORDER BY 1;",
+        "includeAll": false,
+        "multi": false,
+        "current": { "text": "AAPL", "value": "AAPL", "selected": true }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Imbalance (buy−sell / total)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "flowdb" },
+          "rawQuery": true,
+          "format": "time_series",
+          "rawSql": "SELECT $__time(window_start), imbalance FROM trades_agg_1m WHERE symbol = '$symbol' AND $__timeFilter(window_start) ORDER BY 1;"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "VWAP",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "flowdb" },
+          "rawQuery": true,
+          "format": "time_series",
+          "rawSql": "SELECT $__time(window_start), vwap FROM trades_agg_1m WHERE symbol = '$symbol' AND $__timeFilter(window_start) ORDER BY 1;"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Volume by Side (Buy/Sell)",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "options": { "legend": { "displayMode": "table" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "flowdb" },
+          "rawQuery": true,
+          "format": "time_series",
+          "rawSql": "SELECT $__time(window_start), buy_qty FROM trades_agg_1m WHERE symbol = '$symbol' AND $__timeFilter(window_start) ORDER BY 1;"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "postgres", "uid": "flowdb" },
+          "rawQuery": true,
+          "format": "time_series",
+          "rawSql": "SELECT $__time(window_start), sell_qty FROM trades_agg_1m WHERE symbol = '$symbol' AND $__timeFilter(window_start) ORDER BY 1;"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Block Trade Ratio (block_trades / trade_count)",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "flowdb" },
+          "rawQuery": true,
+          "format": "time_series",
+          "rawSql": "SELECT $__time(window_start), CASE WHEN trade_count>0 THEN block_trades::float/trade_count ELSE 0 END AS block_ratio FROM trades_agg_1m WHERE symbol = '$symbol' AND $__timeFilter(window_start) ORDER BY 1;"
+        }
+      ]
+    }
+  ]
+}

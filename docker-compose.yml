@@ -1,0 +1,65 @@
+services:
+  redpanda:
+    image: redpandadata/redpanda:latest
+    container_name: redpanda
+    command:
+      - redpanda start
+      - --overprovisioned
+      - --smp=1
+      - --memory=1G
+      - --reserve-memory=0M
+      - --check=false
+      - --node-id=0
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:19092
+      - --advertise-kafka-addr=PLAINTEXT://redpanda:9092,OUTSIDE://localhost:19092
+    ports: ["19092:19092","9644:9644"]
+    networks: [devnet]
+
+  redpanda-console:
+    image: redpandadata/console:latest
+    container_name: redpanda-console
+    environment:
+      - KAFKA_BROKERS=redpanda:9092
+    ports: ["8081:8080"]
+    depends_on: [redpanda]
+    networks: [devnet]
+
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-flowdb}
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/initdb:/docker-entrypoint-initdb.d
+    networks: [devnet]
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: always
+    ports: ["8082:8080"]
+    depends_on: [postgres]
+    networks: [devnet]
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports: ["3000:3000"]
+    depends_on: [postgres]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks: [devnet] # so that it's on the same network (docker) as others
+
+networks:
+  devnet: {}
+
+volumes:
+  pgdata: {}

@@ -1,0 +1,15 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:flowdb}
+    username: ${POSTGRES_USER:app}
+    password: ${POSTGRES_PASSWORD:app}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 30000
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true

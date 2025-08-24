@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: flowdb
+    uid: flowdb
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    user: app
+    secureJsonData:
+      password: app
+    jsonData:
+      database: flowdb
+      sslmode: disable
+      postgresVersion: 1500     # ok for PG 15+
+      timescaledb: false
+      timeInterval: 1m
