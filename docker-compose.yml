@@ -1,3 +1,9 @@
+# === COPY-THIS BOILERPLATE ============================================
+# Local infra wiring (Redpanda/Postgres/Adminer/Grafana).
+# Tip: remove container_name to avoid cross-project name collisions,
+# or run with a project name: `docker compose -p flowcopilot up -d`.
+# ======================================================================
+
 services:
   redpanda:
     image: redpandadata/redpanda:latest

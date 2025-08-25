@@ -1,3 +1,8 @@
+# === COPY-THIS BOILERPLATE ============================================
+# Service ports & datasource. Tune pool sizes only if needed.
+# Dev knobs to revisit in prod: connection pool sizes, timeouts, logging.
+# ======================================================================
+
 server:
   port: ${SERVER_PORT:8080}
 

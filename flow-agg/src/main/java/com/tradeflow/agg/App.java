@@ -19,6 +19,24 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Properties;
 
+/* === LEARN-BY-BUILDING ================================================
+Why this file matters:
+- It defines the Kafka Streams topology: parse -> groupBy(symbol) -> windowed aggregate -> JDBC upsert.
+- Your choices here control correctness, latency, scalability.
+
+What to tweak as you learn:
+- Windowing: size/grace (e.g., 5s/1m/5m), event-time vs processing-time tradeoffs.
+- State & semantics: WindowStore materialization, commit interval, caching.
+- Failure handling: DLQ rules, idempotent upserts, backoff.
+
+Safe to copy (rarely changes):
+- Basic Streams bootstrap & serde wiring.
+- The JDBC UPSERT template (keep ON CONFLICT for idempotency).
+
+Mini TODOs:
+- Try CACHE_MAX_BYTES_BUFFERING_CONFIG=10_000_000 and compare DB write cadence.
+- Switch AUTO_OFFSET_RESET between earliest/latest and explain first-run behavior.
+======================================================================= */
 public class App {
 
     @SuppressWarnings("deprecation")

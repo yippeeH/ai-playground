@@ -11,6 +11,15 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
+/* === COPY-THIS BOILERPLATE ============================================
+Why:
+- Thin HTTP veneer + schema validation.
+
+You may tweak:
+- Request params (@RequestParam vs @PathVariable), input validation.
+Tip:
+- Keep logic out of controllers; put it in services for testability.
+======================================================================= */
 @RestController
 public class SummarizeController {
     private final FlowSummaryService service;

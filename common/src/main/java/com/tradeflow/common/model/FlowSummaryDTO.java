@@ -1,5 +1,8 @@
 package com.tradeflow.common.model;
 
+/* === COPY-THIS BOILERPLATE ============================================
+Plain DTO for API payloads. Keep lean; enrich via service logic.
+======================================================================= */
 public class FlowSummaryDTO {
     public String symbol;
     public String interval;

@@ -1,3 +1,7 @@
+# === COPY-THIS BOILERPLATE ============================================
+# Points Grafana at dashboards in this folder for auto-provisioning.
+# ======================================================================
+
 apiVersion: 1
 
 providers:

@@ -1,3 +1,8 @@
+-- === LEARN-BY-BUILDING ===============================================
+-- Schema is a product decision. Keys, types, and PKs impact latency & correctness.
+-- TODO: consider partial indexes or BRIN on window_start if data grows.
+-- =====================================================================
+
 CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE IF NOT EXISTS trades_raw (

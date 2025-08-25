@@ -6,6 +6,15 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
+/* === COPY-THIS BOILERPLATE ============================================
+Why:
+- Reusable JSON serde for TradeEvent. Low-change glue.
+
+You may tweak:
+- ObjectMapper settings (fail-fast on unknowns, timestamps).
+Avoid:
+- Expensive per-message allocations in hot paths.
+======================================================================= */
 public class TradeSerde implements Serde<TradeEvent> {
     ObjectMapper om = new ObjectMapper();
 

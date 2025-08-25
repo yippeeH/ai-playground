@@ -6,6 +6,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+/* === LEARN-BY-BUILDING ================================================
+Why:
+- Converts aggregates into a product-facing summary (thresholds, confidence).
+
+What to tweak:
+- Interval routing (5s/1m/5m), z-score usage, confidence function.
+- SQL access pattern (batching, prepared statement caching).
+
+Mini TODO:
+- Tie confidence to |z_imbalance| and block_ratio; document your rationale.
+======================================================================= */
 @Service
 public class FlowSummaryService {
 

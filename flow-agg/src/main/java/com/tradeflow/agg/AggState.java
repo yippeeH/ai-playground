@@ -2,6 +2,18 @@ package com.tradeflow.agg;
 
 import com.tradeflow.common.model.TradeEvent;
 
+/* === LEARN-BY-BUILDING ================================================
+Why:
+- Encodes business math (count/qty/buy/sell/VWAP/block/imbalance) that drives signals.
+
+What to tweak:
+- Add new features (e.g., participation rate, median trade size).
+- Guardrails for outliers (clip absurd qty/price).
+- Precision vs performance (double vs BigDecimal for VWAP if needed).
+
+Mini TODO:
+- Add rolling max trade size and expose it to API/Grafana.
+======================================================================= */
 public class AggState {
     long tradeCount = 0;
     long totalQty = 0;

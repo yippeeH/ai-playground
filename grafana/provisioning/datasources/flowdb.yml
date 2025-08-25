@@ -1,3 +1,8 @@
+# === COPY-THIS BOILERPLATE ============================================
+# Datasource; switch url to host.docker.internal:5432 if Grafana is
+# not on the same Docker network as Postgres.
+# ======================================================================
+
 apiVersion: 1
 
 datasources:

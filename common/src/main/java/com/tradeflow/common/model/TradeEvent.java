@@ -2,6 +2,13 @@ package com.tradeflow.common.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/* === LEARN-BY-BUILDING (LIGHT) =======================================
+Why:
+- Defines the event contract. Changes ripple through producer/streams/api.
+
+What to tweak:
+- Add fields you genuinely need (e.g., venue, orderId), then update serde/topology.
+======================================================================= */
 public class TradeEvent {
     @JsonProperty
     public long tsEpochMillis;

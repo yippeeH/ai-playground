@@ -5,6 +5,13 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
+/* === COPY-THIS BOILERPLATE ============================================
+Why:
+- Serde for persisted aggregate state. Needed for RocksDB/changelog restore.
+
+You may tweak:
+- Versioning strategy if AggState evolves (forward/backward compat).
+======================================================================= */
 public class AggStateSerde implements Serde<AggState> {
     ObjectMapper om = new ObjectMapper();
     @Override public Serializer<AggState> serializer() {

@@ -1,3 +1,7 @@
+# === COPY-THIS BOILERPLATE ============================================
+# One-liners for local dev. Extend targets as your workflow evolves.
+# ======================================================================
+
 .PHONY: up down build sim agg api logs reset-db
 
 up:         ## start infra
