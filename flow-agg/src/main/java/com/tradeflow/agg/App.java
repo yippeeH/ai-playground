@@ -67,21 +67,37 @@ public class App {
                 })
                 .filter((k, ev) -> ev != null);
 
-        TimeWindows windows = TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1));
+        aggregateToTable(events, TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1)), "1m");
+        aggregateToTable(events, TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(5)), "5s");
+        aggregateToTable(events, TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(5)), "5m");
 
+        KafkaStreams streams = new KafkaStreams(builder.build(), props);
+        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+        streams.start();
+        System.out.println("flow-agg started. Writing 1m aggregates to Postgres.");
+    }
+
+    static Connection connect() throws Exception {
+        String url = "jdbc:postgresql://localhost:5432/" + System.getenv().getOrDefault("POSTGRES_DB", "flowdb");
+        String user = System.getenv().getOrDefault("POSTGRES_USER", "app");
+        String pass = System.getenv().getOrDefault("POSTGRES_PASSWORD", "app");
+        return DriverManager.getConnection(url, user, pass);
+    }
+
+    private static void aggregateToTable(KStream<String, TradeEvent> events, TimeWindows windows, String suffix) {
         KTable<Windowed<String>, AggState> aggregated = events
                 .groupBy((k, ev) -> ev.symbol, Grouped.<String, TradeEvent>with(Serdes.String(), new TradeSerde()))
                 .windowedBy(windows)
                 .aggregate(
                         AggState::new,
                         (sym, ev, acc) -> acc.add(ev),
-                        Materialized.<String, AggState, WindowStore<Bytes, byte[]>>as("agg-store")
+                        Materialized.<String, AggState, WindowStore<Bytes, byte[]>>as("agg-store-"+ suffix)
                                 .withKeySerde(Serdes.String())
                                 .withValueSerde(new AggStateSerde()));
 
         aggregated.toStream().foreach((windowedKey, state) -> {
             try (Connection conn = connect()) {
-                String sql = "INSERT INTO trades_agg_1m(window_start, symbol, trade_count, total_qty, buy_qty, sell_qty, vwap, block_trades, imbalance) "
+                String sql = "INSERT INTO trades_agg_"+suffix+"(window_start, symbol, trade_count, total_qty, buy_qty, sell_qty, vwap, block_trades, imbalance) "
                         + "VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT (window_start, symbol) DO UPDATE SET "
                         + "trade_count=EXCLUDED.trade_count, total_qty=EXCLUDED.total_qty, buy_qty=EXCLUDED.buy_qty, "
                         + "sell_qty=EXCLUDED.sell_qty, vwap=EXCLUDED.vwap, block_trades=EXCLUDED.block_trades, imbalance=EXCLUDED.imbalance";
@@ -105,16 +121,5 @@ public class App {
             }
         });
 
-        KafkaStreams streams = new KafkaStreams(builder.build(), props);
-        Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
-        streams.start();
-        System.out.println("flow-agg started. Writing 1m aggregates to Postgres.");
-    }
-
-    static Connection connect() throws Exception {
-        String url = "jdbc:postgresql://localhost:5432/" + System.getenv().getOrDefault("POSTGRES_DB", "flowdb");
-        String user = System.getenv().getOrDefault("POSTGRES_USER", "app");
-        String pass = System.getenv().getOrDefault("POSTGRES_PASSWORD", "app");
-        return DriverManager.getConnection(url, user, pass);
     }
 }

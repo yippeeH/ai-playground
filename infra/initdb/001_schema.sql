@@ -28,6 +28,32 @@ CREATE TABLE IF NOT EXISTS trades_agg_1m (
   PRIMARY KEY (window_start, symbol)
 );
 
+CREATE TABLE IF NOT EXISTS trades_agg_5s (
+  window_start TIMESTAMPTZ NOT NULL,
+  symbol TEXT NOT NULL,
+  trade_count BIGINT NOT NULL,
+  total_qty BIGINT NOT NULL,
+  buy_qty BIGINT NOT NULL,
+  sell_qty BIGINT NOT NULL,
+  vwap NUMERIC(18,6),
+  block_trades BIGINT NOT NULL,
+  imbalance DOUBLE PRECISION NOT NULL,
+  PRIMARY KEY (window_start, symbol)
+);
+
+CREATE TABLE IF NOT EXISTS trades_agg_5m (
+  window_start TIMESTAMPTZ NOT NULL,
+  symbol TEXT NOT NULL,
+  trade_count BIGINT NOT NULL,
+  total_qty BIGINT NOT NULL,
+  buy_qty BIGINT NOT NULL,
+  sell_qty BIGINT NOT NULL,
+  vwap NUMERIC(18,6),
+  block_trades BIGINT NOT NULL,
+  imbalance DOUBLE PRECISION NOT NULL,
+  PRIMARY KEY (window_start, symbol)
+);
+
 CREATE TABLE IF NOT EXISTS signals_flow (
   ts TIMESTAMPTZ NOT NULL,
   symbol TEXT NOT NULL,
