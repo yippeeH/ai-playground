@@ -29,7 +29,7 @@ public class FlowSummaryService {
 
     public String summarize(String symbol, String interval) throws Exception {
         String sql = "SELECT window_start, trade_count, total_qty, buy_qty, sell_qty, vwap, block_trades, imbalance "
-                + "FROM trades_agg_1m WHERE symbol = ? ORDER BY window_start DESC LIMIT 1";
+                + "FROM trades_agg_" + interval + " WHERE symbol = ? ORDER BY window_start DESC LIMIT 1";
         List<Map<String, Object>> rows = jdbc.queryForList(sql, symbol);
         if (rows.isEmpty()) {
             return om.writeValueAsString(Map.of(
@@ -55,8 +55,8 @@ public class FlowSummaryService {
         else if (Math.abs(imbalance) > 0.01)
             color = "mixed";
 
-        String narrative = String.format("Latest 1m for %s: imbalance=%.3f, block_ratio=%.3f (trade_count=%d).",
-                symbol, imbalance, blockRatio, tradeCount);
+        String narrative = String.format("Latest %s for %s: imbalance=%.3f, block_ratio=%.3f (trade_count=%d).",
+                interval, symbol, imbalance, blockRatio, tradeCount);
 
         Map<String, Object> payload = Map.of(
                 "symbol", symbol,

@@ -8,9 +8,9 @@
     "interval": {
       "type": "string",
       "enum": [
+        "5s",
         "1m",
-        "5m",
-        "day"
+        "5m"
       ]
     },
     "flow_color": {
